@@ -1,17 +1,53 @@
 package fm.material.weather.materialweather.ui;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import fm.material.weather.materialweather.R;
 import fm.material.weather.materialweather.base.BaseActivity;
+import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.view.LineChartView;
 
 public class MainActivity extends BaseActivity {
+
+
+    public final static String[] days = new String[]{"今天", "明天", "后天", "周二",
+            "周三", "周四", "周五",};
+    @Bind(R.id.image)
+    ImageView image;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.toolbar_layout)
+    CollapsingToolbarLayout toolbarLayout;
+    @Bind(R.id.layout_weather)
+    AppBarLayout layoutWeather;
+    @Bind(R.id.chart_max)
+    LineChartView chartMax;
+    @Bind(R.id.chart_min)
+    LineChartView chartMin;
+    @Bind(R.id.scroll)
+    NestedScrollView scroll;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
+
+    private LineChartData lineData;
 
     @Override
     protected int getLayoutId() {
@@ -21,38 +57,70 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        chartMax.setZoomEnabled(false);
+        chartMin.setZoomEnabled(false);
+        chartMax.setInteractive(true);
+        chartMin.setInteractive(true);
+        chartMax.setViewportCalculationEnabled(false);
+        chartMin.setViewportCalculationEnabled(false);
+        Viewport v = new Viewport(0, 110, 6, 0);
+        chartMax.setMaximumViewport(v);
+        chartMax.setCurrentViewport(v);
+        chartMin.setMaximumViewport(v);
+        chartMin.setCurrentViewport(v);
+
+
+
+        List<PointValue> values = new ArrayList();
+        values.add(new PointValue(0, 12));
+        values.add(new PointValue(1, 4));
+        values.add(new PointValue(2, 23));
+        values.add(new PointValue(3, 0));
+        values.add(new PointValue(4, 17));
+        values.add(new PointValue(5, 3));
+        values.add(new PointValue(6, 11));
+
+        List<PointValue> values1 = new ArrayList();
+        values1.add(new PointValue(0, 13));
+        values1.add(new PointValue(1, 1));
+        values1.add(new PointValue(2, 12));
+        values1.add(new PointValue(3, 15));
+        values1.add(new PointValue(4, 1));
+        values1.add(new PointValue(5, 13));
+        values1.add(new PointValue(6, 0));
+
+        //In most cased you can call data model methods in builder-pattern-like manner.
+        Line line = new Line(values).setColor(ChartUtils.COLOR_ORANGE).setCubic(true);
+        List<Line> lines = new ArrayList();
+        lines.add(line);
+
+        LineChartData data = new LineChartData();
+        data.setLines(lines);
+
+        //In most cased you can call data model methods in builder-pattern-like manner.
+        Line line1 = new Line(values1).setColor(ChartUtils.COLOR_BLUE).setCubic(true);
+        List<Line> lines1 = new ArrayList();
+        lines1.add(line1);
+
+        LineChartData data1 = new LineChartData();
+        data1.setLines(lines1);
+
+        chartMax.setLineChartData(data);
+        chartMin.setLineChartData(data1);
+        chartMin.setOnValueTouchListener(new LineChartOnValueSelectListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onValueSelected(int i, int i1, PointValue pointValue) {
+                Toast.makeText(MainActivity.this,String.valueOf(pointValue.getY()),Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onValueDeselected() {
+
             }
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
