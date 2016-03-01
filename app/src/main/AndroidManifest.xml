@@ -3,6 +3,7 @@
     package="fm.material.weather.materialweather">
 
     <application
+        android:name=".MaterialWeatherApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,5 +25,7 @@
         <activity
             android:name=".ui.RecyclerActivity"></activity>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

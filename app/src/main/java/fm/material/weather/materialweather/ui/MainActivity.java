@@ -10,11 +10,16 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import fm.material.weather.materialweather.MaterialWeatherApplication;
 import fm.material.weather.materialweather.R;
 import fm.material.weather.materialweather.base.BaseActivity;
 import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
@@ -24,6 +29,10 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 public class MainActivity extends BaseActivity {
 
@@ -112,7 +121,7 @@ public class MainActivity extends BaseActivity {
         chartMin.setOnValueTouchListener(new LineChartOnValueSelectListener() {
             @Override
             public void onValueSelected(int i, int i1, PointValue pointValue) {
-                Toast.makeText(MainActivity.this,String.valueOf(pointValue.getY()),Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, String.valueOf(pointValue.getY()), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -120,6 +129,34 @@ public class MainActivity extends BaseActivity {
 
             }
         });
+
+        ((MaterialWeatherApplication)getApplication()).
+                getApi().getWeatherByName("wuhan",
+                new MyCallBack());
+    }
+
+    class MyCallBack implements Callback {
+        @Override
+        public void success(Object o, Response response) {
+            if(response != null){
+                try {
+                    String tt = new String(((TypedByteArray) response.getBody()).getBytes(), "UTF-8");
+                    JSONObject data = new JSONObject(tt);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (JSONException e){
+
+                }
+
+            }
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            if(error != null){
+
+            }
+        }
     }
 
 
